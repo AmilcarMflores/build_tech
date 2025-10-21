@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Finalizar Ticket de Mantenimiento</h2>
+    
+    <div class="ticket-info">
+        <p><strong>ID:</strong> {{ ticket.id_mantenimiento }}</p>
+        <p><strong>Descripción:</strong> {{ ticket.descripcion }}</p>
+        <p><strong>Responsable:</strong> {{ ticket.responsable }}</p>
+        <p><strong>Fecha Inicio:</strong> {{ ticket.fecha_ini }}</p>
+        <p><strong>Fecha Fin Estimada:</strong> {{ ticket.fecha_fin }}</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="form">
+        <div class="field">
+            <label for="trabajo_realizado">¿Trabajo completado?</label>
+            <div class="control">
+                <select id="trabajo_realizado" name="trabajo_realizado" required>
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="evidencia_url">Evidencia (Foto):</label>
+            <div class="control">
+                <input type="file" id="evidencia_url" name="evidencia_url" 
+                       accept="image/png, image/jpeg, image/jpg, image/gif" required>
+                <small>Formatos permitidos: PNG, JPG, JPEG, GIF</small>
+            </div>
+            {% if ticket.evidencia_url %}
+                <p class="current-evidence">Evidencia actual: <a href="{{ ticket.evidencia_url }}" target="_blank">Ver imagen</a></p>
+            {% endif %}
+        </div>
+
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-primary">Finalizar Ticket</button>
+                <a href="{{ url_for('mantenimiento.list_mantenimiento') }}" class="button">Cancelar</a>
+            </div>
+        </div> 
+    </form>
+</div>
+{% endblock %}

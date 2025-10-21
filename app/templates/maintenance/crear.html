@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Nuevo Ticket{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Creando ticket</h2>
+    
+    <form method="POST">
+        <div class="field">
+            <label for="descripcion">Descripción:</label>
+            <div class="control">
+                <textarea id="descripcion" name="descripcion" required></textarea>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="prioridad">Prioridad:</label>
+            <div class="control">
+                <select id="prioridad" name="prioridad" required>
+                    <option value="" disabled selected>Seleccione una prioridad</option>
+                    <option value="Baja">Baja</option>
+                    <option value="Media">Media</option>
+                    <option value="Alta">Alta</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-primary">Crear Ticket</button>
+            </div>
+        </div> 
+    </form>
+</div>
+{% endblock %}
