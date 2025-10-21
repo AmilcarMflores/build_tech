@@ -1,13 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'comunicacion/base.html' %}
 
-{% block content %}
-<div class="container">
-    <h2>💬 Chat General</h2>
-    
-    <div class="chat-container">
+{% block comunicacion_content %} <div class="chat-container">
         <div class="chat-messages" id="messages">
-            <!-- Los mensajes se cargarán aquí -->
-        </div>
+            </div>
         
         <form id="chat-form" class="chat-form">
             <input 
@@ -20,8 +15,6 @@
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
     </div>
-</div>
-
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
     // USAR EL NOMBRE DE USUARIO AUTENTICADO
@@ -101,17 +94,10 @@
         div.textContent = text;
         return div.innerHTML;
     }
-
-    // ELIMINACIÓN DE FUNCIÓN changeUsername QUE USA localStorage
-    // El encabezado con el botón de cambiar nombre también debe ser eliminado si usas la base.html
-    const header = document.querySelector('.container h2');
-    const changeBtn = header.querySelector('.btn-info');
-    if (changeBtn) {
-        changeBtn.remove();
-    }
 </script>
 
 <style>
+    /* ... (Estilos internos de chat, preferiblemente movidos a style.css) ... */
     .chat-container {
         background: white;
         border-radius: 8px;

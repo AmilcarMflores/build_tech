@@ -5,14 +5,16 @@
 {% block content %}
 <div class="container">
     <h2>Comunicación</h2>
-    <nav>
-        <a href="{{ url_for('mantenimiento.list_mantenimiento') }}" class="button">🏠 Mantenimiento</a>
+    <nav class="actions-section">
         <a href="{{ url_for('chat.chat_general') }}" class="button">💬 Chat General</a>
-        <a href="{{ url_for('chat.notificaciones') }}" class="button notification-link">
-            🔔 Notificaciones
-            <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
-        </a>
+        
+        {% if current_user.has_role('admin') %}
+            <a href="{{ url_for('chat.notificaciones') }}" class="button">
+                🔔 Notificaciones
+            </a>
+        {% endif %}
     </nav>
+    
+    {% block comunicacion_content %}{% endblock %}
 </div>
-{% block comunicacion_content %}{% endblock %}
 {% endblock %}

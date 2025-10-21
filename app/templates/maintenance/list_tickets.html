@@ -1,10 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'maintenance/base.html' %}
 
-{% block content %}
-<div class="container">
-    <h2>Lista de Tickets de Mantenimiento</h2>
-    
-    {% if tickets %}
+{% block maintenance_content %} {% if tickets %}
         <table class="tickets-table">
             <thead>
                 <tr>
@@ -71,5 +67,4 @@
     {% else %}
         <p class="no-tickets">No hay tickets de mantenimiento registrados.</p>
     {% endif %}
-</div>
 {% endblock %}
