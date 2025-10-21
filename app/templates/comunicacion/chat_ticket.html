@@ -18,17 +18,29 @@
     </div>
     
     <div class="chat-container">
-        </div>
+        <div class="chat-messages" id="messages"></div>
+        
+        <form id="chat-form" class="chat-form">
+            <input 
+                type="text" 
+                id="message-input" 
+                placeholder="Escribe un mensaje..." 
+                autocomplete="off"
+                required
+            >
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
     
     <div class="chat-actions">
-        </div>
+        <a href="{{ url_for('mantenimiento.list_mantenimiento') }}" class="btn">Volver a tickets</a>
+        <a href="{{ url_for('mantenimiento.generate_ticket', id=ticket.id_mantenimiento) }}" class="btn btn-info">Ver Detalles</a>
+    </div>
 </div>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
     const ticketId = {{ ticket.id_mantenimiento }};
-    
-    // USAR EL NOMBRE DE USUARIO AUTENTICADO
     const username = "{{ current_username }}"; 
     const socket = io();
     
@@ -36,18 +48,15 @@
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
 
-    // Conectar al chat del ticket
     socket.on('connect', () => {
         console.log('Conectado al servidor como:', username);
         socket.emit('join_ticket_chat', { ticket_id: ticketId });
     });
 
-    // Desconectar del chat al salir
     window.addEventListener('beforeunload', () => {
         socket.emit('leave_ticket_chat', { ticket_id: ticketId });
     });
 
-    // Cargar mensajes existentes
     socket.on('load_messages', (messages) => {
         messagesContainer.innerHTML = '';
         messages.forEach(msg => {
@@ -56,13 +65,11 @@
         scrollToBottom();
     });
 
-    // Recibir nuevo mensaje
     socket.on('new_message', (message) => {
         addMessage(message);
         scrollToBottom();
     });
 
-    // Enviar mensaje
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
@@ -77,7 +84,6 @@
         }
     });
 
-    // Agregar mensaje al DOM
     function addMessage(msg) {
         const isOwnMessage = msg.username === username;
         const messageDiv = document.createElement('div');
@@ -85,7 +91,7 @@
         
         messageDiv.innerHTML = `
             <div class="message-header">
-                <strong>${msg.username}</strong>
+                <strong>${escapeHtml(msg.username)}</strong>
                 <small>${formatTime(msg.timestamp)}</small>
             </div>
             <div class="message-content">${escapeHtml(msg.content)}</div>
@@ -94,18 +100,15 @@
         messagesContainer.appendChild(messageDiv);
     }
 
-    // Scroll al final
     function scrollToBottom() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // Formatear hora
     function formatTime(timestamp) {
         const date = new Date(timestamp);
         return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Escapar HTML
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -202,6 +205,7 @@
     .chat-actions {
         display: flex;
         gap: 0.5rem;
+        justify-content: center;
     }
 </style>
 {% endblock %}

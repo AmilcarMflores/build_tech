@@ -38,6 +38,7 @@ app.register_blueprint(user_controller.user_bp)
 app.register_blueprint(mantenimiento_controller.mantenimiento_bp)
 app.register_blueprint(chat_controller.chat_bp)
 
+
 # Registrar eventos de Socket.IO
 register_socket_events(socketio)
 
