@@ -24,17 +24,8 @@
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
-    // Obtener o crear username
-    function getUsername() {
-        let username = localStorage.getItem('chat_username');
-        if (!username) {
-            username = prompt('Ingresa tu nombre de usuario:') || 'Anónimo';
-            localStorage.setItem('chat_username', username);
-        }
-        return username;
-    }
-
-    const username = getUsername();
+    // USAR EL NOMBRE DE USUARIO AUTENTICADO
+    const username = "{{ current_username }}"; 
     const socket = io();
     
     const messagesContainer = document.getElementById('messages');
@@ -111,23 +102,13 @@
         return div.innerHTML;
     }
 
-    // Cambiar username
-    function changeUsername() {
-        const newUsername = prompt('Nuevo nombre de usuario:', username);
-        if (newUsername && newUsername.trim()) {
-            localStorage.setItem('chat_username', newUsername.trim());
-            location.reload();
-        }
-    }
-
-    // Agregar botón para cambiar username
+    // ELIMINACIÓN DE FUNCIÓN changeUsername QUE USA localStorage
+    // El encabezado con el botón de cambiar nombre también debe ser eliminado si usas la base.html
     const header = document.querySelector('.container h2');
-    const changeBtn = document.createElement('button');
-    changeBtn.className = 'btn btn-info';
-    changeBtn.textContent = 'Cambiar nombre';
-    changeBtn.style.marginLeft = '1rem';
-    changeBtn.onclick = changeUsername;
-    header.appendChild(changeBtn);
+    const changeBtn = header.querySelector('.btn-info');
+    if (changeBtn) {
+        changeBtn.remove();
+    }
 </script>
 
 <style>

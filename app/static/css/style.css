@@ -1,3 +1,4 @@
+/* CONSOLIDATED AND CORRECTED STYLE.CSS */
 * {
     margin: 0;
     padding: 0;
@@ -22,6 +23,10 @@ header {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    position: fixed; /* Fijo para navegación */
+    top: 0;
+    z-index: 1000;
 }
 
 header h1 {
@@ -83,7 +88,7 @@ main {
     flex: 1;
     padding: 2rem;
     max-width: 1400px;
-    margin: 0 auto;
+    margin: 80px auto 0 auto; /* Espacio para el header fijo */
     width: 100%;
 }
 
@@ -93,11 +98,12 @@ footer {
     text-align: center;
     padding: 1rem 0;
     margin-top: auto;
+    width: 100%;
 }
 
-/* Mensajes Flash */
+/* Mensajes Flash (Uso de .message en lugar de .flash-message para consistencia con tu código) */
 .messages {
-    margin-bottom: 1rem;
+    margin: 1rem 0;
 }
 
 .message {
@@ -105,6 +111,7 @@ footer {
     margin-bottom: 0.5rem;
     border-radius: 4px;
     font-weight: 500;
+    text-align: center;
 }
 
 .message.success {
@@ -113,13 +120,13 @@ footer {
     border: 1px solid #c3e6cb;
 }
 
-.message.error {
+.message.danger, .message.error {
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
 
-.message.info {
+.message.warning, .message.info {
     background: #d1ecf1;
     color: #0c5460;
     border: 1px solid #bee5eb;
@@ -131,6 +138,8 @@ footer {
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .container h2 {
@@ -143,8 +152,8 @@ footer {
     gap: 1rem;
 }
 
-/* Tabla de Tickets */
-.tickets-table {
+/* Tablas */
+.tickets-table, .detail-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
@@ -229,6 +238,7 @@ footer {
     font-size: 0.9rem;
     transition: all 0.3s;
     margin-right: 0.5rem;
+    text-align: center;
 }
 
 .button.is-primary, .btn-primary {
@@ -277,8 +287,13 @@ footer {
 }
 
 /* Formularios */
-.form {
+.form, form {
     max-width: 600px;
+    margin: 0 auto; /* Centrar formularios de login/register */
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .field {
@@ -293,6 +308,8 @@ footer {
 }
 
 .control input[type="text"],
+.control input[type="email"],
+.control input[type="password"],
 .control input[type="date"],
 .control input[type="number"],
 .control input[type="file"],
@@ -304,6 +321,7 @@ footer {
     border-radius: 4px;
     font-size: 1rem;
     font-family: inherit;
+    box-sizing: border-box;
 }
 
 .control textarea {
@@ -335,42 +353,6 @@ footer {
     border-left: 4px solid #3498db;
 }
 
-.ticket-info p {
-    margin-bottom: 0.5rem;
-}
-
-/* Detalle del ticket */
-.ticket-detail {
-    margin-top: 1rem;
-}
-
-.detail-section {
-    margin-bottom: 2rem;
-}
-
-.detail-section h3 {
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.detail-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.detail-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.detail-table td:first-child {
-    width: 200px;
-    background: #f8f9fa;
-    font-weight: 600;
-}
-
 /* Evidencia */
 .evidence-container {
     text-align: center;
@@ -399,6 +381,7 @@ footer {
     margin-top: 2rem;
     padding-top: 1rem;
     border-top: 2px solid #e0e0e0;
+    text-align: center;
 }
 
 /* Mensaje sin tickets */
@@ -436,5 +419,6 @@ footer {
 
     main {
         padding: 1rem;
+        margin-top: 100px;
     }
 }

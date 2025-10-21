@@ -18,47 +18,18 @@
     </div>
     
     <div class="chat-container">
-        <div class="chat-messages" id="messages">
-            <!-- Los mensajes se cargarán aquí -->
         </div>
-        
-        <form id="chat-form" class="chat-form">
-            <input 
-                type="text" 
-                id="message-input" 
-                placeholder="Escribe un mensaje..." 
-                autocomplete="off"
-                required
-            >
-            <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>
-    </div>
     
     <div class="chat-actions">
-        <a href="{{ url_for('mantenimiento.generate_ticket', id=ticket.id_mantenimiento) }}" class="btn btn-info">
-            Ver Detalles del Ticket
-        </a>
-        <a href="{{ url_for('mantenimiento.list_mantenimiento') }}" class="btn">
-            Volver a la lista
-        </a>
-    </div>
+        </div>
 </div>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
     const ticketId = {{ ticket.id_mantenimiento }};
     
-    // Obtener o crear username
-    function getUsername() {
-        let username = localStorage.getItem('chat_username');
-        if (!username) {
-            username = prompt('Ingresa tu nombre de usuario:') || 'Anónimo';
-            localStorage.setItem('chat_username', username);
-        }
-        return username;
-    }
-
-    const username = getUsername();
+    // USAR EL NOMBRE DE USUARIO AUTENTICADO
+    const username = "{{ current_username }}"; 
     const socket = io();
     
     const messagesContainer = document.getElementById('messages');
@@ -67,7 +38,7 @@
 
     // Conectar al chat del ticket
     socket.on('connect', () => {
-        console.log('Conectado al servidor');
+        console.log('Conectado al servidor como:', username);
         socket.emit('join_ticket_chat', { ticket_id: ticketId });
     });
 

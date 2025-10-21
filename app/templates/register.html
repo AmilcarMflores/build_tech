@@ -1,61 +1,78 @@
-<!-- app/templates/register.html -->
 <html>
 <head>
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Registrarse</h2>
+    <main>
+        <h2>Registrarse</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-    <form method="post">
+        <form method="post">
 
-        <div class="field">
-            <label for="first_name">Nombre:</label>
-            <div class="control">
-                <input type="text" name="first_name" id="first_name" required class="input">
+            <div class="field">
+                <label for="first_name">Nombre:</label>
+                <div class="control">
+                    <input type="text" name="first_name" id="first_name" required class="input">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label for="last_name">Apellido:</label>
-            <div class="control">
-                <input type="text" name="last_name" id="last_name" required class="input">
+            <div class="field">
+                <label for="last_name">Apellido:</label>
+                <div class="control">
+                    <input type="text" name="last_name" id="last_name" required class="input">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label for="email">Correo Electrónico:</label>
-            <div class="control">
-                <input type="email" name="email" id="email" required class="input">
+            <div class="field">
+                <label for="email">Correo Electrónico:</label>
+                <div class="control">
+                    <input type="email" name="email" id="email" required class="input">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label for="password">Contraseña:</label>
-            <div class="control">
-                <input type="password" name="password" id="password" required class="input">
+            <div class="field">
+                <label for="password">Contraseña:</label>
+                <div class="control">
+                    <input type="password" name="password" id="password" required class="input">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label for="check_password">Confirmar Contraseña:</label>
-            <div class="control">
-                <input type="password" name="check_password" id="check_password" required class="input">
+            <div class="field">
+                <label for="check_password">Confirmar Contraseña:</label>
+                <div class="control">
+                    <input type="password" name="check_password" id="check_password" required class="input">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label for="role">Rol:</label>
-            <div class="control">
-                <select name="role" id="role" required>
-                    <option value="" disabled selected>Seleccione un rol</option>
-                    <option value="user">Usuario</option>
-                    <option value="admin">Administrador</option>
-                </select>
+            <div class="field">
+                <label for="role">Rol:</label>
+                <div class="control">
+                    <select name="role" id="role" required>
+                        <option value="" disabled selected>Seleccione un rol</option>
+                        <option value="user">Usuario</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <input type="submit" value="Registrarse" class="button is-primary">
-    </form>
+            <div class="field">
+                <div class="control">
+                    <input type="submit" value="Registrarse" class="button is-primary">
+                </div>
+            </div>
+        </form>
+    </main>
 </body>
 </html>

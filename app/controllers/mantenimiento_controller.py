@@ -4,6 +4,9 @@ from views import mantenimiento_view
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+# Importar el decorador de roles y login_required
+from utils.decorators import role_required
+from flask_login import login_required, current_user 
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -23,14 +26,17 @@ def allowed_file(filename):
 
 def get_socketio():
     """Obtener instancia de socketio desde el contexto de la app"""
+    # Usar get en lugar de un acceso directo para evitar errores si no está cargado
     return current_app.extensions.get('socketio')
 
 @mantenimiento_bp.route("/mantenimiento")
+@login_required # Todos los usuarios logueados pueden ver la lista
 def list_mantenimiento():
     mantenimientos = Mantenimiento.get_all()
     return mantenimiento_view.list_ticket(mantenimientos)
 
 @mantenimiento_bp.route("/mantenimiento/crear", methods=["GET", "POST"])
+@login_required # Todos los usuarios logueados pueden crear tickets
 def create_ticket():
     if request.method == "POST":
         descripcion = request.form["descripcion"]
@@ -42,7 +48,8 @@ def create_ticket():
         # Notificar al admin sobre el nuevo ticket
         socketio = get_socketio()
         if socketio:
-            from socket_events import notify_new_ticket
+            # Importar localmente para evitar problemas de dependencia circular
+            from socket_events import notify_new_ticket 
             notify_new_ticket(socketio, ticket)
         
         flash("Ticket creado correctamente.", "success")
@@ -51,6 +58,7 @@ def create_ticket():
     return mantenimiento_view.crear_ticket()
 
 @mantenimiento_bp.route("/mantenimiento/actualizar_ini/<int:id>", methods=["GET", "POST"])
+@role_required('admin') # Solo los administradores pueden iniciar el mantenimiento
 def update_ticket_ini(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -86,11 +94,13 @@ def update_ticket_ini(id):
             flash("Ticket actualizado correctamente.", "success")
             return redirect(url_for("mantenimiento.list_mantenimiento"))
         except Exception as e:
-            flash(f"Error al actualizar el ticket: {str(e)}", "error")
+            # Usar 'danger' o 'error' para mensajes de fallo
+            flash(f"Error al actualizar el ticket: {str(e)}", "danger") 
     
     return mantenimiento_view.update_ticket_ini(ticket)
 
 @mantenimiento_bp.route("/mantenimiento/actualizar_fin/<int:id>", methods=["GET", "POST"])
+@role_required('admin') # Solo los administradores pueden finalizar el mantenimiento
 def update_ticket_fin(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -98,21 +108,28 @@ def update_ticket_fin(id):
         return redirect(url_for("mantenimiento.list_mantenimiento"))
     
     if request.method == "POST":
-        trabajo_realizado = request.form.get("trabajo_realizado") == "si"
+        # Se asegura que el valor 'si' se traduzca a True
+        trabajo_realizado = request.form.get("trabajo_realizado") == "si" 
         
         # Manejo de archivo de evidencia
         evidencia_url = ticket.evidencia_url
         if 'evidencia_url' in request.files:
             file = request.files['evidencia_url']
-            if file and file.filename != '' and allowed_file(file.filename):
-                filename = secure_filename(f"ticket_{id}_{file.filename}")
-                
-                # Crear directorio si no existe
-                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-                
-                filepath = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(filepath)
-                evidencia_url = f"/static/uploads/evidencias/{filename}"
+            if file and file.filename != '':
+                if allowed_file(file.filename):
+                    # Uso de current_user.id para asegurar unicidad del nombre de archivo
+                    filename = secure_filename(f"ticket_{id}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}")
+                    
+                    # Crear directorio si no existe (ya se hace en run.py, pero es buena práctica)
+                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                    
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    file.save(filepath)
+                    # La URL pública debe coincidir con la configuración del servidor web
+                    evidencia_url = f"/static/uploads/evidencias/{filename}" 
+                else:
+                    flash("Tipo de archivo no permitido para la evidencia.", "danger")
+                    return redirect(url_for("mantenimiento.update_ticket_fin", id=id))
 
         try:
             ticket.update_mantenimiento_fin(
@@ -129,11 +146,12 @@ def update_ticket_fin(id):
             flash("Ticket finalizado correctamente.", "success")
             return redirect(url_for("mantenimiento.list_mantenimiento"))
         except Exception as e:
-            flash(f"Error al finalizar el ticket: {str(e)}", "error")
+            flash(f"Error al finalizar el ticket: {str(e)}", "danger")
     
     return mantenimiento_view.update_ticket_fin(ticket)
 
 @mantenimiento_bp.route("/mantenimiento/delete/<int:id>", methods=["POST"])
+@role_required('admin') # Solo los administradores pueden eliminar tickets
 def delete_ticket(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -151,15 +169,19 @@ def delete_ticket(id):
     return redirect(url_for("mantenimiento.list_mantenimiento"))
 
 @mantenimiento_bp.route("/mantenimiento/ticket/<int:id>")
+@login_required # Todos los usuarios logueados pueden ver el detalle
 def generate_ticket(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
         flash("Ticket no encontrado.", "error")
         return redirect(url_for("mantenimiento.list_mantenimiento"))
     
-    return mantenimiento_view.generate_ticket(ticket)
+    # Renderiza la vista de detalle (no genera el PDF todavía)
+    return mantenimiento_view.generate_ticket(ticket) 
 
+# Esta ruta genera el PDF
 @mantenimiento_bp.route("/mantenimiento/ticket/<int:id>/download")
+@login_required # Protección de ruta de descarga
 def download_report(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -172,7 +194,8 @@ def download_report(id):
 
     styles = getSampleStyleSheet()
     title_style = styles['Heading1']
-    normal_style = styles['Normal']
+    # Configurar el estilo del título
+    title_style.alignment = 1 # Centro
 
     # Título
     elements.append(Paragraph("REPORTE DE MANTENIMIENTO", title_style))
