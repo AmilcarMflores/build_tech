@@ -6,10 +6,10 @@
 <div class="container">
     <h2>Comunicación</h2>
     <nav class="actions-section">
-        <a href="{{ url_for('chat.chat_general') }}" class="button">💬 Chat General</a>
+        <a href="{{ url_for('comunicacion.chat_general') }}" class="button">💬 Chat General</a>
         
         {% if current_user.has_role('admin') %}
-            <a href="{{ url_for('chat.notificaciones') }}" class="button">
+            <a href="{{ url_for('comunicacion.notificaciones') }}" class="button">
                 🔔 Notificaciones
             </a>
         {% endif %}

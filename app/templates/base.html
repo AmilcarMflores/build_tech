@@ -9,18 +9,23 @@
 <body>
     
     <header>
-        <h1>BuildTech App</h1>
+        <h1>🏢 BuildTech App</h1>
         <nav>
             {% if current_user.is_authenticated %}
                 <ul>
                     <li><a href="{{ url_for('user.index') }}">🏠 Inicio</a></li>
                     <li><a href="{{ url_for('mantenimiento.list_mantenimiento') }}">⚙️ Mantenimiento</a></li>
-                    <li>
-                        <a href="{{ url_for('chat.chat_general') }}">💬 Comunicación</a>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">💬 Comunicación ▼</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('comunicacion.chat_general') }}">💬 Chat General</a></li>
+                            <li><a href="{{ url_for('comunicacion.avisos') }}">📢 Avisos</a></li>
+                            <li><a href="{{ url_for('comunicacion.quejas') }}">📝 Quejas</a></li>
+                        </ul>
                     </li>
                     {% if current_user.has_role('admin') %}
                     <li>
-                        <a href="{{ url_for('chat.notificaciones') }}" class="notification-link">
+                        <a href="{{ url_for('comunicacion.notificaciones') }}" class="notification-link">
                             🔔 Notificaciones
                             <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
                         </a>
@@ -60,7 +65,7 @@
     </main>
     
     <footer>
-        <p>&copy; 2025 BuildTech App. Todos los derechos reservados.</p>
+        <p>&copy; 2025 BuildTech App. Sistema de Gestión de Mantenimiento y Comunicación</p>
     </footer>
     
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
@@ -68,7 +73,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const badge = document.getElementById('notification-badge');
             
-            // Función para actualizar el badge (Usada por Fetch y Socket.IO)
+            // Función para actualizar el badge
             function updateNotificationBadgeFromData(data) {
                 if (badge && data.count > 0) {
                     badge.textContent = data.count;
@@ -78,13 +83,12 @@
                 }
             }
 
-            // 1. Fetch inicial (para cuando la página carga)
+            // 1. Fetch inicial
             if (badge) {
-                fetch('{{ url_for("chat.notificaciones_no_leidas") }}')
+                fetch('{{ url_for("comunicacion.notificaciones_no_leidas") }}')
                     .then(response => {
                         if (response.ok) return response.json();
-                        // Si no es admin o no está logueado, fallará o devolverá 0, lo cual es manejado por la función
-                        throw new Error('Error al cargar notificaciones'); 
+                        throw new Error('Error al cargar notificaciones');
                     })
                     .then(updateNotificationBadgeFromData)
                     .catch(error => console.error('Error al cargar notificaciones:', error));
@@ -99,13 +103,11 @@
                 });
                 
                 socket.on('new_notification', (notification) => {
-                    // Actualizar badge
                     if (badge) {
                         const currentCount = parseInt(badge.textContent) || 0;
                         badge.textContent = currentCount + 1;
                         badge.style.display = 'inline-block';
                         
-                        // Animación del badge
                         badge.classList.add('badge-pulse');
                         setTimeout(() => badge.classList.remove('badge-pulse'), 1000);
                     }
@@ -113,12 +115,96 @@
                     if ('Notification' in window && Notification.permission === 'granted') {
                         new Notification('Nueva notificación', {
                             body: notification.mensaje,
-                            icon: '/static/favicon.ico' 
+                            icon: '/static/favicon.ico'
                         });
                     }
                 });
             {% endif %}
+            
+            // 3. Dropdown menu functionality
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const dropdown = toggle.parentElement;
+                    dropdown.classList.toggle('active');
+                });
+            });
+            
+            // Cerrar dropdown al hacer click fuera
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
         });
     </script>
+    
+    <style>
+        /* Estilos para el dropdown menu */
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+            z-index: 1000;
+        }
+        
+        .dropdown.active .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-menu li {
+            display: block;
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+            border-radius: 0;
+        }
+        
+        .dropdown-menu a:hover {
+            background: #f0f0f0;
+            transform: none;
+        }
+        
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                background: rgba(255,255,255,0.1);
+                margin-top: 0;
+            }
+            
+            .dropdown-menu a {
+                color: white;
+                padding-left: 2rem;
+            }
+            
+            .dropdown-menu a:hover {
+                background: rgba(255,255,255,0.15);
+            }
+        }
+    </style>
 </body>
 </html>

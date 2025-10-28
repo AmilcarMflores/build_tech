@@ -47,7 +47,7 @@
                                class="btn btn-success" title="Finalizar mantenimiento">Finalizar</a>
                         {% endif %}
                         
-                        <a href="{{ url_for('chat.chat_ticket', ticket_id=ticket.id_mantenimiento) }}" 
+                        <a href="{{ url_for('comunicacion.chat_ticket', ticket_id=ticket.id_mantenimiento) }}" 
                            class="btn btn-info" title="Chat del ticket">💬</a>
                         
                         <a href="{{ url_for('mantenimiento.generate_ticket', id=ticket.id_mantenimiento) }}" 

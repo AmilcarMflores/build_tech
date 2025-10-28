@@ -3,7 +3,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_socketio import SocketIO
-from controllers import mantenimiento_controller, chat_controller
+from controllers import mantenimiento_controller, comunicacion_controller
 from controllers import user_controller
 from database import db
 from socket_events import register_socket_events
@@ -24,7 +24,6 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'evidencias')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
 login_manager = LoginManager()
 login_manager.login_view = 'user.login'
 login_manager.init_app(app)
@@ -36,8 +35,7 @@ def load_user(user_id):
 db.init_app(app)
 app.register_blueprint(user_controller.user_bp)
 app.register_blueprint(mantenimiento_controller.mantenimiento_bp)
-app.register_blueprint(chat_controller.chat_bp)
-
+app.register_blueprint(comunicacion_controller.comunicacion_bp)
 
 # Registrar eventos de Socket.IO
 register_socket_events(socketio)
@@ -48,11 +46,14 @@ with app.app_context():
     print("✓ Base de datos y tablas creadas correctamente.")
     print("✓ Servidor corriendo en: http://127.0.0.1:5000")
     print("="*60)
-    print("\n📋 RUTAS DISPONIBLES:")
+    print("\n📋 RUTAS PRINCIPALES:")
     print("   🏠 Inicio:          http://127.0.0.1:5000/")
     print("   📝 Lista tickets:   http://127.0.0.1:5000/mantenimiento")
     print("   ➕ Crear ticket:    http://127.0.0.1:5000/mantenimiento/crear")
+    print("\n💬 COMUNICACIÓN:")
     print("   💬 Chat:            http://127.0.0.1:5000/comunicacion/chat")
+    print("   📢 Avisos:          http://127.0.0.1:5000/comunicacion/avisos")
+    print("   📝 Quejas:          http://127.0.0.1:5000/comunicacion/quejas")
     print("   🔔 Notificaciones:  http://127.0.0.1:5000/comunicacion/notificaciones")
     print("="*60 + "\n")
 

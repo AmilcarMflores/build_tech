@@ -137,3 +137,16 @@ def notify_ticket_updated(socketio, ticket, tipo_actualizacion):
     notification.save()
     
     socketio.emit('new_notification', notification.to_dict(), room='admin_notifications')
+
+def notify_new_queja(socketio, queja):
+    """Notificar a los admins sobre una nueva queja"""
+    autor = queja.autor if not queja.anonima else 'Anónimo'
+    notification = Notification(
+        tipo='nueva_queja',
+        mensaje=f'Nueva queja recibida de {autor} - Categoría: {queja.categoria}',
+        ticket_id=None  # Las quejas no están relacionadas con tickets
+    )
+    notification.save()
+    
+    # Emitir notificación a todos los admins
+    socketio.emit('new_notification', notification.to_dict(), room='admin_notifications')
